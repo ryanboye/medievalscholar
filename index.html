@@ -267,8 +267,6 @@
 
     .show-toggle { text-align: center; margin-top: 1rem; }
 
-    /* ── Hero mobile-only ── */
-    .hero-mobile-only { display: none; }
 
     /* ── Subscribe bar ── */
     .subscribe-bar {
@@ -570,7 +568,9 @@
       .subscribe-input { flex: 1; width: auto; }
       .merch-banner { flex-direction: column; }
       .merch-banner-text { flex: none; text-align: center; }
-      .hero-mobile-only { display: block; margin-top: 1rem; }
+      .hero-tagline { font-size: 2rem; }
+      .hero-stats-row { flex-direction: column; gap: 1rem; }
+      .hs-logo-img { height: 80px; }
       .section { padding: 2.5rem 0; }
       .sh { margin-bottom: 1.5rem; }
       .btn { padding: 0.6rem 1.2rem; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
@@ -630,16 +630,7 @@
       <div class="hs"><span class="hs-val">3.5M</span><span class="hs-lbl">Engagements</span></div>
     </div>
     <!-- Mobile-only CTAs -->
-    <div class="hero-mobile-only">
-      <div class="hero-stats">
-        <div><span class="hero-stat-val">100K+</span><br><span class="hero-stat-lbl">Followers</span></div>
-        <div><span class="hero-stat-val">8K+</span><br><span class="hero-stat-lbl">Subscribers</span></div>
-      </div>
-      <div class="hero-actions">
-        <a href="https://x.com/MedievalScholar" target="_blank" rel="noopener" class="btn btn-gold">Follow on X</a>
-        <a href="https://medievalscholar.substack.com/" target="_blank" rel="noopener" class="btn btn-ghost">Newsletter</a>
-      </div>
-    </div>
+    <!-- Stats row is visible on all screen sizes -->
   </div>
 </section>
 
