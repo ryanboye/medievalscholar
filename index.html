@@ -429,17 +429,17 @@
 
     /* ── Merch ── */
     .merch-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem;
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;
     }
     .merch-card {
-      background: var(--bg-card); border: 1px solid var(--border);
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
       text-decoration: none; color: inherit; transition: all 0.25s; overflow: hidden;
     }
     .merch-card:hover { border-color: var(--gold-dim); transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
     .merch-card:hover img { transform: scale(1.05); }
     .merch-card img {
       width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
-      background: #161616; transition: transform 0.3s;
+      background: #ffffff; transition: transform 0.3s;
     }
     .merch-card-info { padding: 1rem 1.1rem; }
     .merch-card-name {
@@ -597,8 +597,8 @@
     .tier-box-cta-kofi:hover { background: #ff5e5b; color: #fff; border-color: #ff5e5b; }
     .tiers-subhead {
       font-family: 'Playfair Display', serif; font-size: 1.05rem;
-      font-style: italic; color: var(--text-dim); text-align: center;
-      max-width: 640px; margin: 0 auto; line-height: 1.6;
+      font-style: italic; color: var(--text-dim); text-align: left;
+      max-width: 640px; margin: 0; line-height: 1.6;
     }
 
     .partner-stats-grid {
@@ -627,7 +627,8 @@
       .feat-card-img { height: 140px; }
       .thread-row-desc { display: none; }
       .article-grid { grid-template-columns: 1fr; gap: 0.75rem; }
-      .merch-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+      .merch-grid { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+      .merch-card-name { font-size: 0.72rem; }
       .thread-card-grid { grid-template-columns: 1fr; }
       .merch-support-row { grid-template-columns: 1fr; }
       .support-grid { grid-template-columns: repeat(2, 1fr); }
@@ -761,39 +762,14 @@
 </section>
 
 <div class="section-divider"></div>
-<!-- Merch + Support (two-column) -->
-<section class="section" id="merch">
-  <div class="container">
-    <div class="merch-support-row">
-      <!-- Left: Armoury -->
-      <div class="ms-col">
-        <h2 class="ms-col-title">The Armoury</h2>
-        <p class="ms-col-sub">Official merch — hoodies, tees, desk mats, and more.</p>
-        <div class="merch-strip" id="mgrid"></div>
-        <a href="https://medieval-scholar-shop.fourthwall.com/" target="_blank" rel="noopener" class="btn btn-gold" style="margin-top:1rem;">Shop Now</a>
-      </div>
-      <!-- Right: Support -->
-      <div class="ms-col" id="membership">
-        <h2 class="ms-col-title">Support the Scholar</h2>
-        <p class="ms-col-sub">Monthly memberships from $5/mo, or make a one-time donation.</p>
-        <div style="display:flex; gap:0.75rem; margin-top:1rem;">
-          <a href="https://medieval-scholar-shop.fourthwall.com/" target="_blank" rel="noopener" class="btn btn-gold" style="flex:1; text-align:center;">Join a Membership</a>
-          <button onclick="window.open('https://ko-fi.com/medievalscholar','kofi','width=480,height=720,scrollbars=yes')" class="btn" style="flex:1; text-align:center; background:#ff5e5b; color:#fff; border:none; cursor:pointer;">Donate via Ko-fi</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
 <!-- Membership Tiers -->
 <section class="section" id="tiers">
   <div class="container">
     <div class="sh">
       <div class="sh-rule"></div>
       <h2>Membership</h2>
+      <p>Access private writings, vote on upcoming topics, and support the page</p>
     </div>
-    <p class="tiers-subhead">want access to my private writings, or vote on topics as they are written? consider supporting the page</p>
     <div class="tiers-grid">
 
       <!-- Crusader -->
@@ -843,6 +819,20 @@
       </div>
 
     </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+<!-- The Armoury -->
+<section class="section" id="merch">
+  <div class="container">
+    <div class="sh">
+      <div class="sh-rule"></div>
+      <h2>The Armoury</h2>
+      <p>Official merch — hoodies, tees, desk mats, and more</p>
+    </div>
+    <div class="merch-grid" id="mgrid"></div>
+    <a href="https://medieval-scholar-shop.fourthwall.com/" target="_blank" rel="noopener" class="btn btn-gold" style="margin-top:1.5rem;">Shop Now</a>
   </div>
 </section>
 
@@ -1039,8 +1029,11 @@ const merch = [
   { n:"Scholar Tee", p:"$28", img:"https://imgproxy.fourthwall.com/XeFlGOrnINEHe5TxYHlHetfhRWD-K7ijS-AbvsAl5fo/w:720/sm:1/enc/Oz7oxcAulu3Mp2Xk/XB9NG1Z063Y6WllE/XforPDE1lqfDrYFw/6G-tFoHGaRHV3UX2/cFgElKCTqNKG-9uQ/05M80JT2bUTSO1G5/GiOSh99XQJs-XH_a/amIQ2e9OfZZL9-rM/qcxJoBnnYaGLPll7/SIjzWrkjGEpU37qI/QUhE7kKUhl0A5XjP/rmlB-8KFeWprb6IL/Xj-hmmneBNLsZdoT/PTJJpnAT7aXCiY-i/U_0SVEg_B6o", url:"https://medieval-scholar-shop.fourthwall.com//products/medieval-scholar-tee" }
 ];
 document.getElementById('mgrid').innerHTML = merch.map(m => `
-  <a href="${m.url}" target="_blank" rel="noopener" class="merch-thumb" title="${m.n} — ${m.p}">
+  <a href="${m.url}" target="_blank" rel="noopener" class="merch-card">
     <img src="${m.img}" alt="${m.n}" loading="lazy">
+    <div class="merch-card-info">
+      <div class="merch-card-name">${m.n}</div>
+    </div>
   </a>
 `).join('');
 
