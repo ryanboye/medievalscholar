@@ -1090,6 +1090,188 @@ function substackSubscribe(e) {
   return false;
 }
 
+// ── GA4 Outbound Click Tracking ──
+(function() {
+  function categorizeLink(href, el) {
+    var h = href.toLowerCase();
+    // Social
+    if (h.includes('x.com') || h.includes('twitter.com')) {
+      // Thread links (have /status/) vs profile links
+      if (h.includes('/status/')) {
+        var card = el.closest('.feat-card, .tc, .article-card');
+        var label = 'thread';
+        if (card) {
+          var titleEl = card.querySelector('.feat-card-title, .tc-title, .article-card h3');
+          if (titleEl) label = titleEl.textContent.trim();
+        }
+        return { category: 'thread', label: label };
+      }
+      return { category: 'social', label: 'twitter' };
+    }
+    if (h.includes('substack.com'))
+      return { category: 'newsletter', label: 'substack' };
+    if (h.includes('fourthwall.com')) {
+      if (h.includes('checkout') || h.includes('plan_'))
+        return { category: 'membership', label: 'membership_checkout' };
+      // Merch
+      var merchCard = el.closest('.merch-card');
+      if (merchCard) {
+        var nameEl = merchCard.querySelector('.merch-card-name');
+        return { category: 'merch', label: nameEl ? nameEl.textContent.trim() : 'merch_store' };
+      }
+      return { category: 'merch', label: 'merch_store' };
+    }
+    if (h.includes('ko-fi.com'))
+      return { category: 'support', label: 'kofi' };
+    if (h.includes('royalhistsoc.org'))
+      return { category: 'credential', label: 'royal_historical_society' };
+    if (h.startsWith('mailto:'))
+      return { category: 'contact', label: 'email' };
+    return { category: 'outbound', label: href };
+  }
+
+  function trackClick(e) {
+    var a = e.currentTarget;
+    var href = a.href || a.getAttribute('href') || '';
+    if (!href || href.charAt(0) === '#') return;
+    // Skip internal-only links
+    if (href.indexOf('http') !== 0 && href.indexOf('mailto:') !== 0) return;
+
+    var info = categorizeLink(href, a);
+
+    // Use sendBeacon if available, otherwise brief delay
+    var eventData = {
+      event_name: 'outbound_click',
+      link_category: info.category,
+      link_label: info.label,
+      link_url: href
+    };
+
+    if (typeof gtag === 'function') {
+      if (navigator.sendBeacon) {
+        gtag('event', 'outbound_click', {
+          link_category: info.category,
+          link_label: info.label,
+          link_url: href,
+          transport_type: 'beacon'
+        });
+      } else {
+        // Fallback: delay navigation briefly to allow event to fire
+        e.preventDefault();
+        gtag('event', 'outbound_click', {
+          link_category: info.category,
+          link_label: info.label,
+          link_url: href,
+          event_callback: function() {
+            if (a.target === '_blank') {
+              window.open(href, '_blank');
+            } else {
+              document.location = href;
+            }
+          }
+        });
+        // Safety timeout in case callback never fires
+        setTimeout(function() {
+          if (a.target === '_blank') {
+            window.open(href, '_blank');
+          } else {
+            document.location = href;
+          }
+        }, 250);
+      }
+    }
+  }
+
+  // Attach to all existing links
+  function attachTracking() {
+    document.querySelectorAll('a[href]').forEach(function(a) {
+      var href = a.getAttribute('href');
+      if (!href || href.charAt(0) === '#') return;
+      if (href.indexOf('http') !== 0 && href.indexOf('mailto:') !== 0) return;
+      a.addEventListener('click', trackClick);
+    });
+  }
+
+  // Run after DOM is ready (handles JS-rendered links too since this runs after they're built)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachTracking);
+  } else {
+    attachTracking();
+  }
+
+  // Also observe for dynamically added links (e.g., "Show all" in thread archive)
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      m.addedNodes.forEach(function(node) {
+        if (node.nodeType !== 1) return;
+        if (node.tagName === 'A' && node.getAttribute('href')) {
+          var href = node.getAttribute('href');
+          if (href.indexOf('http') === 0 || href.indexOf('mailto:') === 0) {
+            node.addEventListener('click', trackClick);
+          }
+        }
+        // Also check children
+        if (node.querySelectorAll) {
+          node.querySelectorAll('a[href]').forEach(function(a) {
+            var href = a.getAttribute('href');
+            if (href && (href.indexOf('http') === 0 || href.indexOf('mailto:') === 0)) {
+              a.addEventListener('click', trackClick);
+            }
+          });
+        }
+      });
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+
+// ── Section scroll depth tracking ──
+(function() {
+  var sections = [
+    { selector: 'section.hero', name: 'Hero', position: 1 },
+    { selector: '#threads', name: 'Featured Threads', position: 2 },
+    { selector: '#archive', name: 'Thread Archive', position: 3 },
+    { selector: '#articles', name: 'The Newsletter', position: 4 },
+    { selector: '#tiers', name: 'Membership', position: 5 },
+    { selector: '#merch', name: 'The Armoury', position: 6 },
+    { selector: '#partner', name: 'Partner With Us', position: 7 }
+  ];
+
+  var viewed = {};
+
+  function initSectionTracking() {
+    if (typeof IntersectionObserver === 'undefined' || typeof gtag !== 'function') return;
+
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        var key = entry.target.getAttribute('data-section-name');
+        if (!key || viewed[key]) return;
+        viewed[key] = true;
+        gtag('event', 'section_view', {
+          section_name: key,
+          section_position: parseInt(entry.target.getAttribute('data-section-position'), 10)
+        });
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.35 });
+
+    sections.forEach(function(s) {
+      var el = document.querySelector(s.selector);
+      if (!el) return;
+      el.setAttribute('data-section-name', s.name);
+      el.setAttribute('data-section-position', s.position);
+      io.observe(el);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSectionTracking);
+  } else {
+    initSectionTracking();
+  }
+})();
+
 </script>
 </body>
 </html>
